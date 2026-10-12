@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>宠物管家 · 今天页 · 横滑原型 A / B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<style>
+  /* ===== 以下 CSS 原样来自 hybrid-all.html（视觉定稿） ===== */
+  :root { --canvas:#FFFFFF; --card:#FFFFFF; --text:#122D34; --text2:#526E76; --accent:#008289; --on-accent:#FFFFFF; --accent-press:#006D74; --accent-text:#00767D; --accent-tint:#CAF1F2; --border:#DAE8E8; --success:#298646; --success-text:#187A3B; --success-tint:#DBF5DF; --warning:#A66800; --error:#C13C3B; --error-tint:#FFE9E6; --info-tint:#CAF1F2; --rain:#419FC0; --head-bg:#FFFFFF; --head-text:#122D34; --date-bg:#CAF1F2; --date-text:#122D34; --dots:#9CD7DA; --big:#C13C3B; --blob:#BFEBED; --title-color:#00767D; --shadow: 0 2px 6px rgba(20,70,85,0.05), 0 12px 32px rgba(20,70,85,0.07); --shadow-lg: 0 4px 10px rgba(20,70,85,0.05), 0 22px 48px rgba(20,70,85,0.08); --f-display:"Nunito", "Noto Sans SC", "PingFang SC", sans-serif; --w-display:900; --morning:#E3F8F9; --road-old:#DCE7EA; --f-body: "Figtree", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #ECEDEF; font-family: var(--f-body); color: var(--text); font-synthesis: none; line-break: strict; -webkit-font-smoothing: antialiased; }
+  body.full { background: #111; }
+  body.full #root { width: 390px; }
+  .stage { padding: 16px; display: inline-block; }
+  .board { display: flex; gap: 24px; padding: 20px 20px 24px; align-items: flex-start; white-space: nowrap; }
+  .slot { display: inline-block; white-space: normal; }
+  .slot-label { font-family: var(--f-body); font-weight: 700; font-size: 15px; color: #6B7280; margin: 0 0 10px 14px; letter-spacing: 0.04em; }
+  .slot-label b { color: #1F2937; font-weight: 800; margin-right: 8px; }
+  .phone > div > div { background: var(--canvas) !important; }
+  .phone.pg-welcome > div > div { background: var(--morning) !important; }
+
+  .page { position: relative; min-height: 100%; display: flex; flex-direction: column; background: var(--canvas); font-size: 15.5px; line-height: 1.65; }
+  .page.welcome { --canvas: var(--morning); --head-bg: var(--morning); }
+  .page-body { flex: 1 0 auto; }
+  .display { font-family: var(--f-display); font-weight: var(--w-display); letter-spacing: 0; }
+  .card { background: var(--card); border-radius: 22px; box-shadow: var(--shadow); }
+  .card.lg { box-shadow: var(--shadow-lg); }
+  .muted { color: var(--text2); }
+  .small { font-size: 13.5px; color: var(--text2); line-height: 1.6; }
+
+  .head { background: var(--head-bg); color: var(--head-text); padding: 8px 20px 20px; display: flex; align-items: center; gap: 12px; }
+  .avatar { flex: none; width: 58px; height: 58px; border-radius: 50%; background: #FFFFFF; overflow: hidden; position: relative; box-shadow: var(--shadow); }
+  .avatar svg { position: absolute; width: 66px; height: 62px; left: -4px; top: 1px; }
+  .avatar.big { width: 96px; height: 96px; margin: 0 auto; }
+  .avatar.big svg { width: 108px; height: 102px; left: -6px; top: 2px; }
+  .head-name { flex: 1 1 auto; min-width: 0; }
+  .name-row { display: flex; align-items: center; gap: 10px; }
+  .name { font-family: var(--f-display); font-weight: var(--w-display); font-size: 26px; line-height: 1.2; }
+  .pill { display: inline-block; background: var(--accent-tint); color: var(--accent-text); font-size: 12.5px; font-weight: 700; line-height: 1; padding: 6px 10px; border-radius: 999px; letter-spacing: 0.03em; }
+  .breed { font-size: 14.5px; color: var(--text2); margin-top: 3px; font-weight: 500; }
+  .head-temp { flex: none; text-align: right; }
+  .head-temp .where { font-size: 13px; font-weight: 600; color: var(--text2); }
+  .head-temp .deg { font-family: var(--f-display); font-weight: var(--w-display); font-size: 30px; line-height: 1.05; margin-top: 1px; font-variant-numeric: tabular-nums; }
+  .head-temp .deg small { font-size: 12.5px; font-family: var(--f-body); font-weight: 600; color: var(--text2); margin-right: 4px; vertical-align: 5px; }
+
+  .wrap { padding: 0 20px; }
+  .section { margin-top: 28px; }
+  .eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 0.05em; color: var(--text2); margin: 0 6px 10px; display: flex; align-items: center; }
+  .eyebrow .right { margin-left: auto; font-weight: 500; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; }
+  .card-title { font-family: var(--f-display); font-weight: var(--w-display); font-size: 19px; line-height: 1.3; margin: 0 0 6px; color: var(--accent-text); }
+
+  /* 日历主卡 */
+  .hero { margin-top: 6px; overflow: hidden; }
+  .hero-top { background: var(--date-bg); color: var(--date-text); padding: 14px 20px 10px; }
+  .hero-dots { height: 8px; margin: -4px 0 8px; background-image: radial-gradient(circle at 4px 4px, var(--dots) 0 2.5px, transparent 3px); background-size: 14px 8px; background-repeat: repeat-x; background-position: 2px 0; }
+  .hero-date { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--f-display); font-weight: var(--w-display); font-size: 16px; }
+  .hero-date .dow { font-family: var(--f-body); font-weight: 700; font-size: 14px; letter-spacing: 0.08em; color: var(--text2); }
+  .hero-body { padding: 16px 20px 0; }
+  .hero-title { font-size: 27px; line-height: 1.25; margin: 0; display: flex; align-items: baseline; flex-wrap: wrap; }
+  .hero-title .big { color: var(--big); font-size: 48px; line-height: 0.9; margin: 0 5px; position: relative; top: 2px; font-variant-numeric: tabular-nums; }
+  .hero-row { display: flex; align-items: flex-start; gap: 6px; margin-top: 6px; }
+  .hero-desc { flex: 1 1 auto; color: var(--text2); font-size: 15.5px; line-height: 1.6; padding: 4px 0 18px; margin: 0; }
+  .hero-mascot { flex: none; width: 106px; margin: -2px -6px -2px 0; }
+  .m svg, .hero-mascot svg { width: 100%; height: auto; display: block; }
+
+  .er { margin-top: 16px; display: flex; align-items: center; gap: 10px; background: var(--error-tint); color: var(--error); border-radius: 999px; padding: 11px 16px; font-size: 15.5px; font-weight: 600; }
+  .er .plus, .btn svg, .input svg { flex: none; width: 20px; height: 20px; }
+
+  .watch { padding: 20px 20px 18px; }
+  .watch-head { display: flex; align-items: flex-start; justify-content: space-between; }
+  .watch-title { font-size: 30px; line-height: 1.15; margin: 2px 0 0; color: var(--title-color); }
+  .watch-mascot { flex: none; width: 94px; margin: -14px -10px -12px 0; }
+  .block { margin-top: 14px; }
+  .block-label { font-size: 13px; font-weight: 700; letter-spacing: 0.05em; color: var(--text2); margin-bottom: 3px; }
+  .block-text { font-size: 15.5px; line-height: 1.65; }
+  .block.tip { background: var(--info-tint); border-radius: 16px; padding: 12px 14px; }
+  .block.tip .block-label { color: var(--accent-text); }
+  .block.alert { background: var(--error-tint); border-radius: 16px; padding: 12px 14px; }
+  .block.alert .block-label, .block.alert .block-text { color: var(--error); }
+  .block.alert .block-text { font-weight: 600; }
+  .num { font-family: var(--f-display); font-weight: var(--w-display); font-size: 1.18em; line-height: 1; padding: 0 1px; }
+  .source { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text2); font-weight: 500; }
+
+  .wx { padding: 18px 18px 14px; }
+  .chart { display: block; width: 100%; height: auto; }
+  .chart text { font-family: var(--f-body); font-variant-numeric: tabular-nums; }
+  .legend { margin: 8px 2px 0; font-size: 13.5px; line-height: 1.75; color: var(--text2); }
+  .legend .sw { display: inline-block; vertical-align: -2px; margin: 0 4px 0 2px; }
+  .legend .sw.line { width: 16px; height: 3px; background: var(--text); border-radius: 2px; vertical-align: 3px; }
+  .legend .sw.rdot { width: 10px; height: 10px; border-radius: 50%; background: var(--error); }
+  .legend .sw.gblk { width: 14px; height: 12px; border-radius: 3px; background: var(--success-tint); }
+  .legend .sw.gdot { width: 11px; height: 11px; border-radius: 50%; background: var(--success); border: 2px solid var(--card); box-shadow: 0 0 0 1px var(--success); }
+  .legend .sw.bbar { width: 8px; height: 14px; border-radius: 2px; background: var(--rain); vertical-align: -3px; }
+  .timeline { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 2px; }
+  .tl-row { display: flex; align-items: baseline; gap: 10px; padding: 9px 6px; border-top: 1px solid var(--border); font-size: 15.5px; }
+  .tl-row:first-child { border-top: none; }
+  .tl-time { flex: none; width: 46px; font-weight: 700; color: var(--text2); font-variant-numeric: tabular-nums; }
+  .tl-dot { flex: none; width: 10px; height: 10px; border-radius: 50%; position: relative; top: -1px; }
+  .tl-text { flex: 1 1 auto; text-wrap: balance; }
+  .tl-row.hot .tl-text { color: var(--error); font-weight: 600; }
+  .tl-row.go { background: var(--success-tint); border-radius: 14px; border-top: none; padding: 10px 12px; margin-top: 2px; }
+  .tl-row.go .tl-time { color: var(--success-text); }
+  .tl-row.go .tl-text { font-weight: 700; }
+  .chip { display: inline-block; background: var(--success); color: #FFFFFF; font-size: 13px; font-weight: 700; line-height: 1; padding: 4px 8px 3px; border-radius: 999px; vertical-align: 2px; margin: 0 2px; letter-spacing: 0.03em; }
+
+  /* 便利贴：淡色纸 + 半透明胶带 + 歪 1°，软阴影 */
+  .stickies { padding: 10px 6px 4px; display: flex; flex-direction: column; gap: 16px; }
+  .sticky { position: relative; border-radius: 6px; padding: 18px 18px 16px; font-size: 15.5px; line-height: 1.65; text-wrap: balance; box-shadow: 0 2px 6px rgba(20,70,85,0.06), 0 12px 28px rgba(20,70,85,0.10); }
+  .sticky.s1 { background: var(--accent-tint); transform: rotate(-1deg); margin-right: 10px; }
+  .sticky.s2 { background: var(--success-tint); transform: rotate(0.9deg); margin-left: 10px; }
+  .sticky .tape { position: absolute; top: -11px; left: 50%; width: 70px; height: 20px; transform: translateX(-50%) rotate(-2.5deg); background: rgba(255,255,255,0.72); border: 1px solid rgba(20,70,85,0.10); box-shadow: 0 1px 3px rgba(20,70,85,0.16); border-radius: 2px; }
+  .sticky.s2 .tape { left: auto; right: 22px; transform: rotate(3deg); }
+  .sticky .num { color: var(--big); }
+  .sticky b { font-weight: 700; }
+  .sticky .bul li::before { background: var(--accent-text); }
+
+  .foot { text-align: center; padding: 30px 0 24px; }
+  .foot-mascot { width: 108px; margin: 0 auto; }
+  .foot-line { font-size: 19px; margin-top: 4px; color: var(--title-color); }
+
+  .tabs { position: sticky; bottom: 10px; margin: 6px 14px 10px; background: var(--card); border-radius: 24px; box-shadow: var(--shadow-lg); display: flex; padding: 8px 8px 7px; z-index: 5; }
+  .full .tabs { position: static; margin-bottom: 30px; }
+  .tab { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text2); font-size: 12px; font-weight: 600; letter-spacing: 0.03em; padding: 4px 0 2px; border-radius: 16px; }
+  .tab svg { width: 24px; height: 24px; }
+  .tab.on { color: var(--accent-text); background: var(--accent-tint); font-weight: 700; }
+  .bottom-bar { position: sticky; bottom: 10px; margin: 6px 14px 10px; z-index: 5; }
+  .full .bottom-bar { position: static; margin-bottom: 30px; }
+
+  .btn { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; border-radius: 16px; font-size: 16px; font-weight: 700; padding: 0 16px; text-align: center; line-height: 1.3; }
+  .btn.primary { background: var(--accent); color: var(--on-accent); box-shadow: 0 8px 20px rgba(0,130,137,0.18); }
+  .btn.secondary { background: var(--card); color: var(--accent-text); border: 1.5px solid var(--accent-tint); box-shadow: var(--shadow); }
+  .btn.quiet { background: var(--card); color: var(--text); border: 1px solid var(--border); box-shadow: var(--shadow); }
+  .btn + .btn { margin-top: 10px; }
+  .btn-row { display: flex; gap: 10px; margin-top: 12px; }
+  .btn-row .btn { flex: 1 1 0; margin: 0; }
+
+  .bul { list-style: none; margin: 0; padding: 0; }
+  .bul li { position: relative; padding-left: 16px; margin-top: 7px; font-size: 15.5px; line-height: 1.6; }
+  .bul li::before { content: ""; position: absolute; left: 2px; top: 10px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .bul.red li::before { background: var(--error); }
+
+  /* 欢迎（清晨 A 原样） */
+  .w-top { flex: 1 0 auto; min-height: 330px; display: flex; align-items: flex-end; justify-content: center; padding: 24px 0 28px; position: relative; }
+  .w-top::before { content: ""; position: absolute; left: 50%; bottom: 34px; width: 250px; height: 110px; transform: translateX(-50%); border-radius: 50%; background: var(--blob); filter: blur(6px); }
+  .w-top .m { width: 192px; position: relative; }
+  .w-card { padding: 24px 22px 22px; }
+  .w-title { font-size: 29px; line-height: 1.25; margin: 0; color: var(--title-color); }
+  .w-text { color: var(--text2); font-size: 15.5px; line-height: 1.7; margin: 10px 0 18px; }
+  .w-fine { font-size: 12.5px; color: var(--text2); text-align: center; margin: 14px 0 0; }
+
+  /* 成长 */
+  .road-wrap { padding: 16px 12px 6px; }
+  .road { display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 6px 10px rgba(20,70,85,0.10)); }
+  .road text { font-family: var(--f-body); font-weight: 700; font-size: 13px; fill: var(--text); }
+  .road-cap { text-align: center; font-family: var(--f-display); font-weight: var(--w-display); font-size: 17px; padding: 4px 0 16px; color: var(--accent-text); }
+  .ev { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-top: 1px solid var(--border); }
+  .ev:first-child { border-top: none; padding-top: 2px; }
+  .ev:last-child { padding-bottom: 2px; }
+  .ev .ev-main { flex: 1 1 auto; min-width: 0; }
+  .ev .ev-title { font-size: 16px; font-weight: 700; line-height: 1.4; }
+  .ev .ev-sub { font-size: 13.5px; color: var(--text2); margin-top: 1px; font-variant-numeric: tabular-nums; }
+  .ev .ev-when { flex: none; font-size: 13px; font-weight: 700; color: var(--text2); padding: 4px 9px; border-radius: 999px; background: var(--info-tint); white-space: nowrap; }
+  .ev .ev-when.red { color: var(--error); background: var(--error-tint); }
+  .ev .ev-when.green { color: var(--success-text); background: var(--success-tint); }
+
+  /* 健康 */
+  .er-head { background: var(--error-tint); color: var(--error); padding: 14px 20px 12px; font-family: var(--f-display); font-weight: var(--w-display); font-size: 19px; line-height: 1.3; display: flex; align-items: center; gap: 10px; }
+  .er-head svg { width: 22px; height: 22px; flex: none; }
+  .er-body { padding: 10px 20px 18px; }
+  .more { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--error); font-size: 15px; margin-top: 10px; }
+  .mcard { display: flex; align-items: center; gap: 14px; padding: 18px 18px; }
+  .mcard .m { flex: none; width: 92px; margin: -10px 0 -8px -6px; }
+  .history { padding: 16px 20px; }
+  .history .hn { font-family: var(--f-display); font-weight: var(--w-display); font-size: 19px; line-height: 1.3; color: var(--accent-text); }
+  .history .hd { display: block; font-size: 13.5px; color: var(--text2); font-variant-numeric: tabular-nums; margin-top: 3px; }
+  .weigh-row { display: flex; gap: 10px; margin-top: 12px; }
+  .weigh-row .input { flex: 1 1 auto; }
+  .weigh-row .btn { flex: none; min-height: 50px; padding: 0 18px; }
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 2px; }
+  .tile { background: var(--card); border-radius: 16px; padding: 12px 14px 11px; box-shadow: var(--shadow); }
+  .tile .k { font-size: 12.5px; color: var(--accent-text); font-weight: 700; letter-spacing: 0.04em; }
+  .tile .v { font-size: 16px; font-weight: 700; margin-top: 3px; line-height: 1.35; font-variant-numeric: tabular-nums; }
+  .tile .s { font-size: 13px; color: var(--text2); margin-top: 2px; line-height: 1.5; text-wrap: balance; }
+  .list { padding: 18px 20px 16px; }
+
+  /* 档案 */
+  .kv { display: grid; grid-template-columns: 88px 1fr; row-gap: 7px; column-gap: 8px; font-size: 15.5px; margin: 14px 0 0; }
+  .kv dt { color: var(--text2); font-weight: 600; }
+  .kv dd { margin: 0; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .kv dd.dim { color: var(--text2); }
+  .cap { text-align: center; font-size: 13px; color: var(--text2); margin-top: 8px; }
+  .slot-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; font-size: 15.5px; }
+  .slot-row .sl { width: 86px; color: var(--text2); font-weight: 600; flex: none; }
+  .tp { display: inline-flex; align-items: center; justify-content: center; min-width: 46px; height: 36px; border-radius: 10px; font-family: var(--f-display); font-weight: var(--w-display); font-size: 17px; background: var(--accent-tint); color: var(--accent-text); font-variant-numeric: tabular-nums; }
+  .gone { text-align: center; padding: 22px 18px 18px; }
+  .gone .moon { display: inline-block; width: 44px; height: 22px; border-radius: 22px 22px 0 0; background: var(--accent-tint); }
+  .gone .del { display: inline-block; margin-top: 14px; color: var(--error); font-weight: 700; font-size: 15px; }
+
+  /* 建档 */
+  .form-top { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px 0; }
+  .form-title { font-family: var(--f-display); font-weight: var(--w-display); font-size: 24px; margin: 0; }
+  .xclose { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--card); box-shadow: var(--shadow); }
+  .xclose svg { width: 16px; height: 16px; }
+  .field { margin-top: 22px; }
+  .label { font-size: 13px; font-weight: 700; letter-spacing: 0.05em; color: var(--text2); margin-bottom: 8px; }
+  .label .req { color: var(--error); margin-left: 3px; }
+  .input { min-height: 50px; border-radius: 14px; background: var(--card); border: 1px solid var(--border); box-shadow: var(--shadow); padding: 0 14px; display: flex; align-items: center; font-size: 15.5px; color: var(--text2); gap: 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chipb { border: 1px solid var(--border); border-radius: 999px; padding: 8px 12px; font-size: 14px; font-weight: 600; background: var(--card); line-height: 1.25; }
+  .chipb.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+  .chipb.check { display: inline-flex; align-items: center; gap: 6px; }
+  .chipb.check i { width: 14px; height: 14px; border: 1.5px solid currentColor; border-radius: 50%; display: inline-block; }
+  .faces { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px 6px; margin-top: 4px; }
+  .face { text-align: center; font-size: 12.5px; font-weight: 600; color: var(--text2); }
+  .face .f { width: 54px; height: 54px; border-radius: 50%; margin: 0 auto 5px; background: var(--card); box-shadow: var(--shadow); position: relative; overflow: hidden; }
+  .face .f svg { position: absolute; width: 62px; height: 58px; left: -4px; top: 1px; }
+  .face .f.ph { background: var(--info-tint); box-shadow: none; }
+  .face.on .f { box-shadow: 0 0 0 3px var(--card), 0 0 0 5.5px var(--accent); }
+  .face.on { color: var(--accent-text); }
+
+  /* ---------- 组件切图模式 ---------- */
+  .part-stage { width: 390px; padding: 16px 16px 32px; background: var(--canvas); overflow: hidden; font-size: 15.5px; line-height: 1.65; }
+  .part-stage.morning { padding: 0; height: 852px; }
+  .part-stage .tabs { position: static; margin: 0; }
+  .part-stage .field, .part-stage .hero, .part-stage .er { margin-top: 0; }
+  .part-stage .foot { padding: 8px 0 6px; }
+  .part-stage .form-top { padding: 0; }
+  /* 建档 · 后半段字段 */
+  .seg { display: inline-flex; background: var(--info-tint); border-radius: 999px; padding: 3px; gap: 2px; margin-bottom: 10px; }
+  .seg span { padding: 8px 14px; border-radius: 999px; font-size: 14px; font-weight: 700; color: var(--text2); }
+  .seg span.on { background: var(--accent); color: #FFFFFF; }
+  .sub-label { font-size: 13px; color: var(--text2); font-weight: 600; margin: 8px 0 6px; }
+  .input + .sub-label { margin-top: 12px; }
+  .chipb.circle { display: inline-flex; align-items: center; gap: 7px; }
+  .chipb.circle i { width: 14px; height: 14px; border: 1.5px solid var(--text2); border-radius: 50%; display: inline-block; }
+  .chipb.circle.on i { border-color: #FFFFFF; background: #FFFFFF; box-shadow: inset 0 0 0 3px var(--accent); }
+  .locate { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 12px; background: var(--accent-tint); color: var(--accent-text); font-weight: 700; font-size: 15px; margin-bottom: 10px; }
+  .locate svg { width: 18px; height: 18px; }
+  .mode-pair { display: grid; gap: 22px; }
+  .mode-cap { font-size: 12.5px; color: var(--accent-text); font-weight: 700; letter-spacing: 0.05em; margin-bottom: 8px; }
+  /* 幼犬 */
+  .tr { display: flex; gap: 12px; padding: 12px 0; border-top: 1px solid var(--border); align-items: flex-start; }
+  .tr:first-child { border-top: none; }
+  .tr .box { flex: none; width: 22px; height: 22px; border: 2px solid var(--accent); border-radius: 7px; background: var(--card); margin-top: 2px; }
+  .tr .tr-title { font-size: 16px; font-weight: 700; line-height: 1.4; }
+  .tr .tr-how { font-size: 15px; line-height: 1.6; margin-top: 2px; }
+  .tr .tr-how .muted { font-size: 13px; font-weight: 700; letter-spacing: 0.05em; margin-right: 6px; }
+  .diff { display: flex; align-items: center; gap: 10px; font-size: 15.5px; margin-bottom: 6px; }
+  .diff .dots { display: inline-flex; gap: 5px; }
+  .diff .dots i { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--accent); background: var(--card); display: inline-block; }
+  .diff .dots i.on { background: var(--accent); }
+  .win { display: block; width: 100%; height: auto; overflow: visible; }
+  .win text { font-family: var(--f-body); font-variant-numeric: tabular-nums; }
+
+  /* ===================== swipe 原型新增 ===================== */
+  .board { flex-wrap: wrap; row-gap: 28px; }
+  .slot-cap { white-space: normal; max-width: 417px; margin: 12px 14px 0; font-size: 13.5px; line-height: 1.65; color: #4B5563; }
+  .slot-cap b { color: #1F2937; font-weight: 800; }
+  .slot-cap .meas { display: block; margin-top: 4px; color: #6B7280; font-variant-numeric: tabular-nums; }
+  .slot-cap .meas strong { color: #00767D; font-weight: 800; }
+
+  /* 冷知识（两个变体共用） */
+  .fact { display: flex; align-items: center; gap: 12px; padding: 12px 16px 12px 8px; border-radius: 18px; background: var(--morning); }
+  .fact .m { flex: none; width: 84px; margin: -10px 0 -12px; }
+  .fact-label { font-size: 12.5px; font-weight: 700; letter-spacing: 0.05em; color: var(--accent-text); display: flex; align-items: center; gap: 6px; }
+  .fact-label .tag { background: #FFFFFF; color: var(--text2); font-size: 11px; line-height: 1; padding: 4px 6px; border-radius: 999px; letter-spacing: 0.02em; }
+  .fact-text { font-size: 15px; line-height: 1.6; margin-top: 3px; text-wrap: balance; }
+
+  /* 天气说明：只留一句 */
+  .legend.one { margin-top: 4px; font-size: 14px; line-height: 1.7; }
+
+  /* ---------- A · 整页横滑 ---------- */
+  .page.swipe-a { height: 100%; min-height: 0; overflow: hidden; }
+  .swipe-a .head { flex: none; padding-bottom: 14px; }
+  .deck { position: relative; flex: 1 1 0; min-height: 0; display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; cursor: grab; outline: none; }
+  .deck::-webkit-scrollbar { display: none; }
+  .deck.dragging { scroll-snap-type: none; cursor: grabbing; user-select: none; }
+  .slide { flex: 0 0 100%; width: 100%; min-width: 0; scroll-snap-align: start; scroll-snap-stop: always; overflow-y: auto; overflow-x: hidden; padding: 2px 20px 10px; scrollbar-width: none; }
+  .slide::-webkit-scrollbar { display: none; }
+  .dots-row { flex: none; display: flex; justify-content: center; align-items: center; gap: 7px; padding: 10px 0 0; }
+  .dots-row i { display: block; width: 7px; height: 7px; border-radius: 999px; background: var(--dots); transition: width .2s, background .2s; cursor: pointer; }
+  .dots-row i.on { width: 20px; background: var(--accent); }
+  .swipe-a .tabs { position: static; flex: none; margin-top: 8px; }
+  .next-up { margin: 24px 6px 0; }
+  .nu-label { font-size: 13px; font-weight: 700; letter-spacing: 0.05em; color: var(--text2); margin-bottom: 2px; }
+  .nu-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid var(--border); font-size: 15px; }
+  .nu-row:nth-child(2) { border-top: none; }
+  .nu-n { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-tint); color: var(--accent-text); font-family: var(--f-display); font-weight: 900; font-size: 13px; display: grid; place-items: center; }
+  .nu-row .muted { margin-left: auto; font-size: 13.5px; }
+
+  /* ---------- B · 纵向主干 + 局部横滑 ---------- */
+  .rail { position: relative; display: flex; gap: 12px; align-items: stretch; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scroll-padding: 0 20px; margin: 0 -20px; padding: 14px 20px 16px; scrollbar-width: none; overscroll-behavior-x: contain; cursor: grab; }
+  .rail::-webkit-scrollbar { display: none; }
+  .rail.dragging { scroll-snap-type: none; cursor: grabbing; user-select: none; }
+  .rail > * { flex: 0 0 auto; width: 300px; scroll-snap-align: start; }
+  .rail .sticky { width: 230px; margin: 0; }
+  .rcard { padding: 14px 16px 12px; }
+  .rc-label { font-size: 12.5px; font-weight: 700; letter-spacing: 0.05em; color: var(--text2); }
+  .rc-head { display: flex; align-items: flex-start; justify-content: space-between; }
+  .rc-title { font-size: 27px; line-height: 1.15; margin: 2px 0 0; color: var(--title-color); }
+  .rc-mascot { flex: none; width: 74px; margin: -14px -8px -14px 0; }
+  .rcard .block { margin-top: 8px; }
+  .rcard .block-text { font-size: 15px; line-height: 1.6; }
+  .rcard .block.tip, .rcard .block.alert { padding: 10px 10px; }
+  .rcard .more { color: var(--accent-text); font-size: 14px; margin-top: 10px; }
+  .sticky .rc-label { color: var(--accent-text); margin-bottom: 4px; }
+  .sticky.s2 .rc-label { color: var(--success-text); }
+  .section.rail-sec { margin-top: 16px; }
+  .section.after-rail { margin-top: 0; }
+  .wx-label { display: flex; align-items: center; margin: 0 2px 2px; }
+  .wx-label .right { margin-left: auto; font-weight: 500; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; }
+  .timeline.compact { margin-top: 8px; }
+  .foot-fact { margin: 16px 0 6px; }
+  .swipe-b .wx { padding-top: 14px; }
+  .fact.compact { padding: 10px 14px 10px 6px; }
+  .fact.compact .m { width: 72px; margin: -10px 0 -12px; }
+  .swipe-b .tabs { margin-top: 10px; }
+
+  .measure-now { position: absolute; left: -9999px; top: 0; width: 390px; visibility: hidden; pointer-events: none; }
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+/* 用法：swipe.html 默认 A、B 两台并排；?v=a 或 ?v=b 只看一台；?v=a&card=2 直接定位到 A 的第 2 张；?v=b&scroll=600 先滚到某处；?v=b&full=1 不带外壳看整页；?v=now 看现状。 */
+/**
+ * IosFrame — iPhone设备边框
+ *
+ * 参考iPhone 15 Pro（393×852 logical pixels）
+ * 含：灵动岛 + 状态栏（时间/信号/电池）+ Home Indicator + 圆角
+ *
+ * 用法：
+ *   <IosFrame time="9:41" battery={85}>
+ *     <YourAppContent />
+ *   </IosFrame>
+ *
+ * 自定义：
+ *   <IosFrame width={390} height={844} darkMode showKeyboard>
+ *     ...
+ *   </IosFrame>
+ */
+
+const iosFrameStyles = {
+  wrapper: {
+    display: 'inline-block',
+    padding: 12,
+    background: '#000',
+    borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.3)',
+    position: 'relative',
+  },
+  screen: {
+    position: 'relative',
+    borderRadius: 48,
+    overflow: 'hidden',
+    background: '#fff',
+  },
+  statusBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 54,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '0 32px 0 32px',
+    fontSize: 16,
+    fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif',
+    zIndex: 20,
+    pointerEvents: 'none',
+  },
+  dynamicIsland: {
+    position: 'absolute',
+    top: 12,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: 124,
+    height: 36,
+    background: '#000',
+    borderRadius: 999,
+    zIndex: 30,
+  },
+  statusIcons: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
+  },
+  signalIcon: {
+    display: 'flex',
+    alignItems: 'flex-end',
+    gap: 2,
+    height: 12,
+  },
+  signalBar: {
+    width: 3,
+    background: 'currentColor',
+    borderRadius: 1,
+  },
+  wifiIcon: {
+    width: 16,
+    height: 12,
+    position: 'relative',
+  },
+  batteryIcon: {
+    width: 26,
+    height: 12,
+    border: '1.5px solid currentColor',
+    borderRadius: 3,
+    padding: 1,
+    position: 'relative',
+    opacity: 0.8,
+  },
+  batteryCap: {
+    position: 'absolute',
+    top: 3,
+    right: -3,
+    width: 2,
+    height: 6,
+    background: 'currentColor',
+    borderRadius: '0 1px 1px 0',
+  },
+  content: {
+    position: 'absolute',
+    top: 54,
+    left: 0,
+    right: 0,
+    bottom: 34,
+    overflow: 'auto',
+  },
+  homeIndicator: {
+    position: 'absolute',
+    bottom: 10,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: 140,
+    height: 5,
+    background: 'rgba(0,0,0,0.3)',
+    borderRadius: 999,
+    zIndex: 10,
+  },
+  homeIndicatorDark: {
+    background: 'rgba(255,255,255,0.5)',
+  },
+};
+
+function IosFrame({
+  children,
+  width = 393,
+  height = 852,
+  time = '9:41',
+  battery = 100,
+  darkMode = false,
+  showStatusBar = true,
+  showDynamicIsland = true,
+  showHomeIndicator = true,
+}) {
+  const textColor = darkMode ? '#fff' : '#000';
+
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{
+        ...iosFrameStyles.screen,
+        width,
+        height,
+        background: darkMode ? '#000' : '#fff',
+      }}>
+        {showStatusBar && (
+          <div style={{ ...iosFrameStyles.statusBar, color: textColor }}>
+            <span>{time}</span>
+            <div style={iosFrameStyles.statusIcons}>
+              <div style={iosFrameStyles.signalIcon}>
+                <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+                <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+                <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+                <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+              </div>
+              <svg width="16" height="12" viewBox="0 0 16 12" fill="none" style={{ color: textColor }}>
+                <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+                <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+                <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+              </svg>
+              <div style={iosFrameStyles.batteryIcon}>
+                <div style={{
+                  width: `${battery}%`,
+                  height: '100%',
+                  background: 'currentColor',
+                  borderRadius: 1,
+                  opacity: 0.9,
+                }} />
+                <div style={iosFrameStyles.batteryCap} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showDynamicIsland && <div style={iosFrameStyles.dynamicIsland} />}
+
+        <div style={iosFrameStyles.content}>
+          {children}
+        </div>
+
+        {showHomeIndicator && (
+          <div style={{
+            ...iosFrameStyles.homeIndicator,
+            ...(darkMode ? iosFrameStyles.homeIndicatorDark : {}),
+          }} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+if (typeof window !== 'undefined') {
+  window.IosFrame = IosFrame;
+}
+
+const SVG_XIAOBAI = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 0 320 300">
+<path d="M 152 220 C 150 250 146 272 140 300 L 260 300 C 254 272 250 250 248 220 Z" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5" stroke-linejoin="round"></path>
+<path d="M 200 72 C 266 72 296 116 294 166 C 292 218 254 244 200 244 C 146 244 108 218 106 166 C 104 116 134 72 200 72 Z" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5"></path>
+<ellipse cx="224" cy="98" rx="24" ry="13" fill="#FFD3B6"></ellipse>
+<path d="M 132 92 C 102 86 80 110 86 142 C 90 162 112 162 122 146 C 132 130 138 112 150 100 Z" fill="#FFD3B6" stroke="#3B2F27" stroke-width="5" stroke-linejoin="round"></path>
+<path d="M 268 92 C 298 86 320 110 314 142 C 310 162 288 162 278 146 C 268 130 262 112 250 100 Z" fill="#EEF0F3" stroke="#3B2F27" stroke-width="5" stroke-linejoin="round"></path>
+<ellipse cx="200" cy="194" rx="44" ry="30" fill="#F3EEE6"></ellipse>
+<ellipse cx="138" cy="192" rx="14" ry="8" fill="#FF8FA8" opacity="0.55"></ellipse>
+<ellipse cx="262" cy="192" rx="14" ry="8" fill="#FF8FA8" opacity="0.55"></ellipse>
+<circle cx="168" cy="156" r="12" fill="#3B2F27"></circle>
+<circle cx="232" cy="156" r="12" fill="#3B2F27"></circle>
+<circle cx="172" cy="151" r="4" fill="#FFFFFF"></circle>
+<circle cx="236" cy="151" r="4" fill="#FFFFFF"></circle>
+<circle cx="165" cy="161" r="1.8" fill="#FFFFFF"></circle>
+<circle cx="229" cy="161" r="1.8" fill="#FFFFFF"></circle>
+<path d="M 189 178 C 189 171 211 171 211 178 C 211 186 204 191 200 191 C 196 191 189 186 189 178 Z" fill="#3B2F27"></path>
+<path d="M 200 191 L 200 202" stroke="#3B2F27" stroke-width="4" stroke-linecap="round"></path>
+<path d="M 188 202 C 190 218 210 218 212 202 C 206 206 194 206 188 202 Z" fill="#6B3428" stroke="#3B2F27" stroke-width="4" stroke-linejoin="round"></path>
+<ellipse cx="200" cy="212" rx="6" ry="4" fill="#FF8FA8"></ellipse>
+<path d="M 142 238 C 172 260 228 260 258 238 L 200 294 Z" fill="#3FA7D6" stroke="#3B2F27" stroke-width="5" stroke-linejoin="round"></path>
+</svg>`;
+const SVG_READ = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -80 420 530">
+<ellipse cx="200" cy="430" rx="150" ry="12" fill="#E8DFD1"></ellipse>
+<path d="M 268 380 C 330 370 352 320 336 288 C 326 268 304 276 310 294" fill="none" stroke="#3B2F27" stroke-width="28" stroke-linecap="round"></path>
+<path d="M 268 380 C 330 370 352 320 336 288 C 326 268 304 276 310 294" fill="none" stroke="#FBFAF7" stroke-width="18" stroke-linecap="round"></path>
+
+<path d="M 145 240 C 118 300 108 360 118 412 L 282 412 C 292 360 282 300 255 240 Z" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5" stroke-linejoin="round"></path>
+<ellipse cx="125" cy="382" rx="46" ry="40" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5"></ellipse>
+<ellipse cx="275" cy="382" rx="46" ry="40" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5"></ellipse>
+<ellipse cx="98" cy="416" rx="30" ry="14" fill="#F1ECE3" stroke="#3B2F27" stroke-width="5"></ellipse>
+<ellipse cx="302" cy="416" rx="30" ry="14" fill="#F1ECE3" stroke="#3B2F27" stroke-width="5"></ellipse>
+<path d="M 168 262 C 156 305 172 345 200 356 C 228 345 244 305 232 262 Z" fill="#F1ECE3"></path>
+<g transform="rotate(-6 200 245)">
+<path d="M 200 72 C 266 72 296 116 294 166 C 292 218 254 244 200 244 C 146 244 108 218 106 166 C 104 116 134 72 200 72 Z" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5"></path>
+<ellipse cx="224" cy="98" rx="24" ry="13" fill="#FFD3B6"></ellipse>
+<path d="M 132 92 C 102 86 80 110 86 142 C 90 162 112 162 122 146 C 132 130 138 112 150 100 Z" fill="#FFD3B6" stroke="#3B2F27" stroke-width="5" stroke-linejoin="round"></path>
+<path d="M 268 92 C 298 86 320 110 314 142 C 310 162 288 162 278 146 C 268 130 262 112 250 100 Z" fill="#EEF0F3" stroke="#3B2F27" stroke-width="5" stroke-linejoin="round"></path>
+<ellipse cx="200" cy="194" rx="44" ry="30" fill="#F3EEE6"></ellipse>
+<ellipse cx="138" cy="192" rx="14" ry="8" fill="#FF8FA8" opacity="0.55"></ellipse>
+<ellipse cx="262" cy="192" rx="14" ry="8" fill="#FF8FA8" opacity="0.55"></ellipse>
+<circle cx="168" cy="156" r="12" fill="#3B2F27"></circle>
+<circle cx="232" cy="156" r="12" fill="#3B2F27"></circle>
+<circle cx="172" cy="151" r="4" fill="#FFFFFF"></circle>
+<circle cx="236" cy="151" r="4" fill="#FFFFFF"></circle>
+<path d="M 189 178 C 189 171 211 171 211 178 C 211 186 204 191 200 191 C 196 191 189 186 189 178 Z" fill="#3B2F27"></path>
+<path d="M 200 191 L 200 202" stroke="#3B2F27" stroke-width="4" stroke-linecap="round"></path>
+<path d="M 188 202 C 190 218 210 218 212 202 C 206 206 194 206 188 202 Z" fill="#6B3428" stroke="#3B2F27" stroke-width="4" stroke-linejoin="round"></path>
+<ellipse cx="200" cy="212" rx="6" ry="4" fill="#FF8FA8"></ellipse>
+<path d="M 142 238 C 172 260 228 260 258 238 L 200 294 Z" fill="#3FA7D6" stroke="#3B2F27" stroke-width="5" stroke-linejoin="round"></path>
+</g>
+<path d="M 200 300 L 140 288 L 140 362 L 200 374 L 260 362 L 260 288 Z" fill="#2E4A6B" stroke="#3B2F27" stroke-width="5" stroke-linejoin="round"></path>
+<path d="M 200 304 L 148 294 L 148 356 L 200 366 Z" fill="#FFFDF8" stroke="#3B2F27" stroke-width="4" stroke-linejoin="round"></path>
+<path d="M 200 304 L 252 294 L 252 356 L 200 366 Z" fill="#FFFDF8" stroke="#3B2F27" stroke-width="4" stroke-linejoin="round"></path>
+<path d="M 160 308 L 190 314 M 160 320 L 190 326 M 160 332 L 182 337 M 210 314 L 240 308 M 210 326 L 240 320 M 210 338 L 232 333" stroke="#B5AC9F" stroke-width="3" stroke-linecap="round"></path>
+<ellipse cx="142" cy="332" rx="16" ry="20" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5"></ellipse>
+<ellipse cx="258" cy="332" rx="16" ry="20" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5"></ellipse>
+
+</svg>`;
+const SVG_REST = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -80 420 530">
+
+<ellipse cx="200" cy="432" rx="180" ry="12" fill="#E8DFD1"></ellipse>
+<path d="M 330 372 C 372 362 384 330 368 316" fill="none" stroke="#3B2F27" stroke-width="26" stroke-linecap="round"></path>
+<path d="M 330 372 C 372 362 384 330 368 316" fill="none" stroke="#FBFAF7" stroke-width="16" stroke-linecap="round"></path>
+<ellipse cx="200" cy="368" rx="150" ry="58" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5"></ellipse>
+<ellipse cx="78" cy="394" rx="42" ry="34" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5"></ellipse>
+<ellipse cx="322" cy="394" rx="42" ry="34" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5"></ellipse>
+<rect x="146" y="360" width="40" height="62" rx="20" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5"></rect>
+<rect x="214" y="360" width="40" height="62" rx="20" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5"></rect>
+<ellipse cx="166" cy="420" rx="26" ry="13" fill="#F1ECE3" stroke="#3B2F27" stroke-width="5"></ellipse>
+<ellipse cx="234" cy="420" rx="26" ry="13" fill="#F1ECE3" stroke="#3B2F27" stroke-width="5"></ellipse>
+<path d="M 160 414 L 160 426 M 172 414 L 172 426 M 228 414 L 228 426 M 240 414 L 240 426" stroke="#3B2F27" stroke-width="3" stroke-linecap="round"></path>
+<g transform="translate(0 108)">
+<path d="M 200 72 C 266 72 296 116 294 166 C 292 218 254 244 200 244 C 146 244 108 218 106 166 C 104 116 134 72 200 72 Z" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5"></path>
+<ellipse cx="224" cy="98" rx="24" ry="13" fill="#FFD3B6"></ellipse>
+<path d="M 132 92 C 102 86 80 110 86 142 C 90 162 112 162 122 146 C 132 130 138 112 150 100 Z" fill="#FFD3B6" stroke="#3B2F27" stroke-width="5" stroke-linejoin="round"></path>
+<path d="M 268 92 C 298 86 320 110 314 142 C 310 162 288 162 278 146 C 268 130 262 112 250 100 Z" fill="#EEF0F3" stroke="#3B2F27" stroke-width="5" stroke-linejoin="round"></path>
+<ellipse cx="200" cy="194" rx="44" ry="30" fill="#F3EEE6"></ellipse>
+<ellipse cx="138" cy="192" rx="14" ry="8" fill="#FF8FA8" opacity="0.55"></ellipse>
+<ellipse cx="262" cy="192" rx="14" ry="8" fill="#FF8FA8" opacity="0.55"></ellipse>
+<circle cx="168" cy="156" r="12" fill="#3B2F27"></circle>
+<circle cx="232" cy="156" r="12" fill="#3B2F27"></circle>
+<circle cx="172" cy="151" r="4" fill="#FFFFFF"></circle>
+<circle cx="236" cy="151" r="4" fill="#FFFFFF"></circle>
+<path d="M 189 178 C 189 171 211 171 211 178 C 211 186 204 191 200 191 C 196 191 189 186 189 178 Z" fill="#3B2F27"></path>
+<path d="M 200 191 L 200 202" stroke="#3B2F27" stroke-width="4" stroke-linecap="round"></path>
+<path d="M 188 202 C 190 218 210 218 212 202 C 206 206 194 206 188 202 Z" fill="#6B3428" stroke="#3B2F27" stroke-width="4" stroke-linejoin="round"></path>
+<ellipse cx="200" cy="212" rx="6" ry="4" fill="#FF8FA8"></ellipse>
+<path d="M 142 238 C 172 260 228 260 258 238 L 200 294 Z" fill="#3FA7D6" stroke="#3B2F27" stroke-width="5" stroke-linejoin="round"></path>
+</g><path d="M 318 100 L 334 100 L 318 116 L 334 116 M 342 76 L 352 76 L 342 86 L 352 86" fill="none" stroke="#6B5E52" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>`;
+const SVG_WALK = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -80 420 530">
+<ellipse cx="200" cy="430" rx="150" ry="12" fill="#E8DFD1"></ellipse>
+<path d="M 268 380 C 330 370 352 320 336 288 C 326 268 304 276 310 294" fill="none" stroke="#3B2F27" stroke-width="28" stroke-linecap="round"></path>
+<path d="M 268 380 C 330 370 352 320 336 288 C 326 268 304 276 310 294" fill="none" stroke="#FBFAF7" stroke-width="18" stroke-linecap="round"></path>
+<path d="M 352 266 L 366 258 M 360 290 L 376 290 M 316 262 L 312 248" fill="none" stroke="#3B2F27" stroke-width="4" stroke-linecap="round"></path>
+<path d="M 145 240 C 118 300 108 360 118 412 L 282 412 C 292 360 282 300 255 240 Z" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5" stroke-linejoin="round"></path>
+<ellipse cx="125" cy="382" rx="46" ry="40" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5"></ellipse>
+<ellipse cx="275" cy="382" rx="46" ry="40" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5"></ellipse>
+<ellipse cx="98" cy="416" rx="30" ry="14" fill="#F1ECE3" stroke="#3B2F27" stroke-width="5"></ellipse>
+<ellipse cx="302" cy="416" rx="30" ry="14" fill="#F1ECE3" stroke="#3B2F27" stroke-width="5"></ellipse>
+<path d="M 168 262 C 156 305 172 345 200 356 C 228 345 244 305 232 262 Z" fill="#F1ECE3"></path>
+
+<rect x="158" y="318" width="36" height="94" rx="18" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5"></rect>
+<ellipse cx="176" cy="414" rx="24" ry="13" fill="#F1ECE3" stroke="#3B2F27" stroke-width="5"></ellipse>
+<path d="M 170 408 L 170 420 M 182 408 L 182 420" stroke="#3B2F27" stroke-width="3" stroke-linecap="round"></path>
+
+<rect x="206" y="318" width="36" height="94" rx="18" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5"></rect>
+<ellipse cx="224" cy="414" rx="24" ry="13" fill="#F1ECE3" stroke="#3B2F27" stroke-width="5"></ellipse>
+<path d="M 218 408 L 218 420 M 230 408 L 230 420" stroke="#3B2F27" stroke-width="3" stroke-linecap="round"></path>
+
+<path d="M 200 72 C 266 72 296 116 294 166 C 292 218 254 244 200 244 C 146 244 108 218 106 166 C 104 116 134 72 200 72 Z" fill="#FBFAF7" stroke="#3B2F27" stroke-width="5"></path>
+<ellipse cx="224" cy="98" rx="24" ry="13" fill="#FFD3B6"></ellipse>
+<path d="M 132 92 C 102 86 80 110 86 142 C 90 162 112 162 122 146 C 132 130 138 112 150 100 Z" fill="#FFD3B6" stroke="#3B2F27" stroke-width="5" stroke-linejoin="round"></path>
+<path d="M 268 92 C 298 86 320 110 314 142 C 310 162 288 162 278 146 C 268 130 262 112 250 100 Z" fill="#EEF0F3" stroke="#3B2F27" stroke-width="5" stroke-linejoin="round"></path>
+<ellipse cx="200" cy="194" rx="44" ry="30" fill="#F3EEE6"></ellipse>
+<ellipse cx="138" cy="192" rx="14" ry="8" fill="#FF8FA8" opacity="0.55"></ellipse>
+<ellipse cx="262" cy="192" rx="14" ry="8" fill="#FF8FA8" opacity="0.55"></ellipse>
+<circle cx="168" cy="156" r="12" fill="#3B2F27"></circle>
+<circle cx="232" cy="156" r="12" fill="#3B2F27"></circle>
+<circle cx="172" cy="151" r="4" fill="#FFFFFF"></circle>
+<circle cx="236" cy="151" r="4" fill="#FFFFFF"></circle>
+<path d="M 189 178 C 189 171 211 171 211 178 C 211 186 204 191 200 191 C 196 191 189 186 189 178 Z" fill="#3B2F27"></path>
+<path d="M 200 191 L 200 202" stroke="#3B2F27" stroke-width="4" stroke-linecap="round"></path>
+<path d="M 188 202 C 190 218 210 218 212 202 C 206 206 194 206 188 202 Z" fill="#6B3428" stroke="#3B2F27" stroke-width="4" stroke-linejoin="round"></path>
+<ellipse cx="200" cy="212" rx="6" ry="4" fill="#FF8FA8"></ellipse>
+<path d="M 142 238 C 172 260 228 260 258 238 L 200 294 Z" fill="#3FA7D6" stroke="#3B2F27" stroke-width="5" stroke-linejoin="round"></path>
+
+<path d="M 196 216 C 240 238 258 300 246 350 C 238 390 262 416 296 412" fill="none" stroke="#3B2F27" stroke-width="13" stroke-linecap="round"></path>
+<path d="M 196 216 C 240 238 258 300 246 350 C 238 390 262 416 296 412" fill="none" stroke="#B0603A" stroke-width="7" stroke-linecap="round"></path>
+<ellipse cx="318" cy="410" rx="22" ry="13" fill="none" stroke="#3B2F27" stroke-width="13"></ellipse>
+<ellipse cx="318" cy="410" rx="22" ry="13" fill="none" stroke="#B0603A" stroke-width="7"></ellipse>
+
+</svg>`;
+function Mascot({ src, className }) { return <div className={className} dangerouslySetInnerHTML={{ __html: src }} />; }
+
+const Ic = {
+  today: (<svg viewBox="0 0 26 26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="5.5" width="18" height="16" rx="4" /><path d="M4 10.5h18M9 3.5v4M17 3.5v4" /><circle cx="13" cy="16" r="1.6" fill="currentColor" stroke="none" /></svg>),
+  grow: (<svg viewBox="0 0 26 26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 22V11" /><path d="M13 14c-5 0-7-3-7-7 4 0 7 2 7 7Z" /><path d="M13 11c0-4 3-6 7-6 0 4-2 6-7 6Z" /><path d="M5 22h16" /></svg>),
+  health: (<svg viewBox="0 0 26 26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 21.5s-8-5-8-11a4.3 4.3 0 0 1 8-2.2 4.3 4.3 0 0 1 8 2.2c0 6-8 11-8 11Z" /><path d="M7 13h3l1.5-3 2.5 6 1.5-3h3.5" /></svg>),
+  file: (<svg viewBox="0 0 26 26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7.5a2 2 0 0 1 2-2h5l2 2.5h7a2 2 0 0 1 2 2V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7.5Z" /><path d="M4 12h18" /></svg>),
+  plus: (<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="10" cy="10" r="8.5" /><path d="M10 6v8M6 10h8" /></svg>),
+  phone: (<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 3.5h3.5l1.5 4-2 1.5a10 10 0 0 0 4 4l1.5-2 4 1.5V16a1.5 1.5 0 0 1-1.5 1.5A13 13 0 0 1 2.5 5 1.5 1.5 0 0 1 4 3.5Z" /></svg>),
+  pen: (<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 16h3l8.5-8.5a1.5 1.5 0 0 0 0-2.1l-.9-.9a1.5 1.5 0 0 0-2.1 0L4 13v3Z" /><path d="M11 6l3 3" /></svg>),
+  heart: (<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 16.5s-6.5-4-6.5-8.6A3.4 3.4 0 0 1 10 5.9a3.4 3.4 0 0 1 6.5 2c0 4.6-6.5 8.6-6.5 8.6Z" /></svg>),
+  chev: (<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{width:14,height:14}}><path d="M5 8l5 5 5-5" /></svg>),
+  search: (<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="9" cy="9" r="5.5" /><path d="M13.5 13.5 17 17" /></svg>),
+  x: (<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M3 3l10 10M13 3 3 13" /></svg>),
+  up: (<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13V4M6.5 7.5 10 4l3.5 3.5M4 16h12" /></svg>),
+  down: (<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 4v9M6.5 9.5 10 13l3.5-3.5M4 16h12" /></svg>),
+};
+function Tabs({ active }) {
+  const items = [['今天', Ic.today], ['成长', Ic.grow], ['健康', Ic.health], ['档案', Ic.file]];
+  return <nav className="tabs">{items.map(([label, icon]) => <div key={label} className={'tab' + (label === active ? ' on' : '')}>{icon}<span>{label}</span></div>)}</nav>;
+}
+function Head() {
+  return (
+    <header className="head">
+      <div className="avatar"><Mascot src={SVG_XIAOBAI} /></div>
+      <div className="head-name">
+        <div className="name-row"><div className="name">大福</div><span className="pill">老年期</span></div>
+        <div className="breed">金毛 · 公 · 9 岁 4 个月</div>
+      </div>
+      <div className="head-temp"><div className="where">武侯区</div><div className="deg"><small>今天最高</small>24°</div></div>
+    </header>
+  );
+}
+const Sticky = ({ k, children }) => <div className={'sticky ' + k}><span className="tape" />{children}</div>;
+
+const HOURS = [6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22];
+const TEMPS = [18,18,19,19,20,21,23,24,24,24,24,24,23,22,23,22,22];
+const RAIN = { 6: 100, 7: 90, 8: 60, 9: 30 };
+const CAUTION = 24, RECOMMEND = 19, WINDOWS = [[8, 11], [17, 20]];
+function DayChart({ H = 212 } = {}) {
+  const W = 317, padL = 10, padR = 34, top = 24, bottom = 66;
+  const plotW = W - padL - padR, plotH = H - top - bottom;
+  const x = h => padL + (h - 6) / 16 * plotW;
+  const tMin = 16.5, tMax = 25.5;
+  const y = t => top + plotH - (t - tMin) / (tMax - tMin) * plotH;
+  const pts = HOURS.map((h, i) => [x(h), y(TEMPS[i])]);
+  let d = `M ${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    d += ` C ${c1[0]} ${c1[1]}, ${c2[0]} ${c2[1]}, ${p2[0]} ${p2[1]}`;
+  }
+  const area = `${d} L ${pts[pts.length - 1][0]} ${top + plotH} L ${pts[0][0]} ${top + plotH} Z`;
+  const yC = y(CAUTION), half = plotW / 16 / 2, rainBase = top + plotH + 8;
+  const hourY = H - 24, noteY = H - 5;
+  return (
+    <svg className="chart" viewBox={`0 0 ${W} ${H}`} width={W} height={H}>
+      {WINDOWS.map(([a, b]) => (
+        <g key={a}>
+          <rect x={x(a) - half} y={top - 8} width={x(b) - x(a) + half * 2} height={plotH + 20} rx="14" fill="var(--success-tint)" />
+          <text x={(x(a) + x(b)) / 2} y={noteY} textAnchor="middle" fontSize="12.5" fontWeight="700" fill="var(--success-text)">可遛 {a}–{b} 点</text>
+        </g>
+      ))}
+      <line x1={padL} x2={W - padR + 4} y1={yC} y2={yC} stroke="var(--error)" strokeWidth="1.5" strokeDasharray="4 4" />
+      <text x={W - padR + 9} y={yC + 4} fontSize="12" fontWeight="700" fill="var(--error)">24°</text>
+      <line x1={padL} x2={W - padR + 4} y1={top + plotH} y2={top + plotH} stroke="var(--border)" strokeWidth="1" />
+      <path d={area} fill="var(--accent)" opacity="0.07" />
+      <path d={d} fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+      {HOURS.map((h, i) => {
+        const [px, py] = pts[i];
+        if (h === RECOMMEND) return (
+          <g key={h}>
+            <circle cx={px} cy={py} r="7" fill="var(--success)" stroke="var(--card)" strokeWidth="2.5" />
+            <rect x={px - 21} y={py + 12} width="42" height="20" rx="10" fill="var(--success)" />
+            <text x={px} y={py + 26} textAnchor="middle" fontSize="12" fontWeight="700" fill="#FFFFFF">推荐</text>
+          </g>
+        );
+        if (TEMPS[i] >= CAUTION) return <circle key={h} cx={px} cy={py} r="4.5" fill="var(--error)" />;
+        return <circle key={h} cx={px} cy={py} r="3.5" fill="var(--card)" stroke="var(--text)" strokeWidth="2" />;
+      })}
+      <text x={pts[0][0] - 2} y={pts[0][1] - 11} fontSize="12" fontWeight="700" fill="var(--text2)">18°</text>
+      <text x={pts[16][0] + 9} y={pts[16][1] + 4} fontSize="12" fontWeight="700" fill="var(--text2)">22°</text>
+      {HOURS.map(h => RAIN[h] ? <rect key={'r' + h} x={x(h) - 6} y={rainBase} width="12" height={RAIN[h] / 100 * 22} rx="4" fill="var(--rain)" /> : null)}
+      {[6,8,10,12,14,16,18,20,22].map(h => <text key={'h' + h} x={x(h)} y={hourY} textAnchor="middle" fontSize="12" fontWeight="600" fill="var(--text2)">{h}</text>)}
+    </svg>
+  );
+}
+
+/* ===================== 今天页组件（沿用 hybrid 的大福内容） ===================== */
+const FACT = '狗的鼻纹和人的指纹一样，每只都不一样。';
+function Hero() {
+  return (
+    <section className="card lg hero">
+      <div className="hero-top"><div className="hero-dots" /><div className="hero-date"><span>10 月 3 日</span><span className="dow">周六</span></div></div>
+      <div className="hero-body">
+        <h1 className="hero-title display">狗证<span className="big">9</span>天后到期</h1>
+        <div className="hero-row"><p className="hero-desc">狗证还有 9 天到期（各地规定不同，以当地要求为准）</p><Mascot src={SVG_READ} className="hero-mascot" /></div>
+      </div>
+    </section>
+  );
+}
+const Er = () => <a className="er"><span className="plus">{Ic.plus}</span><span>这些情况别等，尽快去医院 →</span></a>;
+function Watch() {
+  return (
+    <>
+      <div className="eyebrow">今天留意</div>
+      <div className="card watch">
+        <div className="watch-head"><h2 className="watch-title display">呼吸</h2><Mascot src={SVG_REST} className="watch-mascot m" /></div>
+        <div className="block"><div className="block-label">看什么</div><div className="block-text">睡着时呼吸变快、咳嗽、肚子跟着用力、走一会儿就累、牙龈发白或发紫</div></div>
+        <div className="block"><div className="block-label">为什么看这个</div><div className="block-text">心肺问题在休息时的呼吸次数上最早露出来</div></div>
+        <div className="block tip"><div className="block-label">小提示</div><div className="block-text">它睡熟时数一分钟呼吸几次，每周记一次，超过 <span className="num">30</span> 次或比平时明显快就去看</div></div>
+        <div className="block alert"><div className="block-label">出现了怎么办</div><div className="block-text">牙龈发白发紫、呼吸费力要马上去医院</div></div>
+        <div className="source">依据：AAHA 2023 老年犬照护指南</div>
+      </div>
+    </>
+  );
+}
+/* 原来的五句图例 */
+function LegendFull() {
+  return <p className="legend"><span className="sw line" />线是今天每小时的温度。<span className="sw rdot" />超过 24°（它的谨慎线）的钟点标红，这些点别遛；<span className="sw gblk" />两块绿色是你设的可遛时段；<span className="sw gdot" />绿点是推荐的 19 点；<span className="sw bbar" />蓝柱是早上在下雨。</p>;
+}
+/* 砍到一句：A 解释图例（15 字，时间轴还在）；B 直接说结论（20 字，顶替时间轴） */
+function LegendOne() {
+  return <p className="legend one"><span className="sw rdot" />红点别遛，<span className="sw gblk" />绿块可遛，<span className="sw gdot" />绿点推荐。</p>;
+}
+function LegendPlan() {
+  return <p className="legend one"><span className="sw bbar" />早上有雨，<span className="sw rdot" />13 点太热，<span className="sw gdot" />19 点推荐遛。</p>;
+}
+function Timeline({ keyOnly, compact }) {
+  return (
+    <div className={'timeline' + (compact ? ' compact' : '')}>
+      {keyOnly ? null : <div className="tl-row"><span className="tl-time">06:00</span><span className="tl-dot" style={{ background: 'var(--rain)' }} /><span className="tl-text">开始下雨 · 100%，持续到约 10:00</span></div>}
+      {keyOnly ? null : <div className="tl-row"><span className="tl-time">08:00</span><span className="tl-dot" style={{ background: 'var(--success-tint)', border: '2px solid var(--success)' }} /><span className="tl-text">遛狗 · 18°C，稍热，带水</span></div>}
+      <div className="tl-row hot"><span className="tl-time">13:00</span><span className="tl-dot" style={{ background: 'var(--error)' }} /><span className="tl-text">最热 · 24°C，偏热，这个点别遛</span></div>
+      <div className="tl-row go"><span className="tl-time">19:00</span><span className="tl-dot" style={{ background: 'var(--success)' }} /><span className="tl-text">遛狗 · 22°C · <span style={{ whiteSpace: 'nowrap' }}><span className="chip">推荐</span>，</span>稍热，带水</span></div>
+    </div>
+  );
+}
+const WxEyebrow = () => <div className="eyebrow">今天 · 武侯区<span className="right">6:00–22:00</span></div>;
+function Stickies() {
+  return (
+    <>
+      <div className="eyebrow">顺手注意</div>
+      <div className="stickies">
+        <Sticky k="s1">老年犬建议每半年体检<span style={{ whiteSpace: 'nowrap' }}>一次，</span>距上次已经 <span className="num">212</span> 天</Sticky>
+        <Sticky k="s2">换毛季：每天梳毛。双层毛不要剃</Sticky>
+      </div>
+    </>
+  );
+}
+function Fact({ className, compact }) {
+  return (
+    <div className={'fact ' + (className || '') + (compact ? ' compact' : '')}>
+      <Mascot src={SVG_WALK} className="m" />
+      <div><div className="fact-label">今日冷知识<span className="tag">示例</span></div><div className="fact-text">{FACT}</div></div>
+    </div>
+  );
+}
+
+/* 鼠标拖动 = 手指滑动（触屏走原生 scroll-snap） */
+function useDragScroll(ref, onRelease) {
+  React.useEffect(() => {
+    const el = ref.current; if (!el) return;
+    let down = false, startX = 0, startLeft = 0, snapTimer = null;
+    const onDown = e => {
+      if (e.pointerType === 'touch' || e.button !== 0) return;
+      down = true; startX = e.clientX; startLeft = el.scrollLeft;
+      clearTimeout(snapTimer); el.classList.add('dragging');
+      try { el.setPointerCapture(e.pointerId); } catch (_) {}
+    };
+    const onMove = e => { if (!down) return; el.scrollLeft = startLeft - (e.clientX - startX); e.preventDefault(); };
+    const onUp = e => {
+      if (!down) return; down = false;
+      onRelease(el, e.clientX - startX, startLeft);
+      snapTimer = setTimeout(() => el.classList.remove('dragging'), 450);
+    };
+    el.addEventListener('pointerdown', onDown); el.addEventListener('pointermove', onMove);
+    el.addEventListener('pointerup', onUp); el.addEventListener('pointercancel', onUp);
+    el.addEventListener('dragstart', e => e.preventDefault());
+    return () => { el.removeEventListener('pointerdown', onDown); el.removeEventListener('pointermove', onMove); el.removeEventListener('pointerup', onUp); el.removeEventListener('pointercancel', onUp); };
+  }, []);
+}
+const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+
+/* ===================== A · 整页横滑 ===================== */
+const A_CARDS = ['今天需要关注', '今天留意', '今天 · 天气', '顺手注意'];
+function SwipeA({ card }) {
+  const ref = React.useRef(null);
+  const init = clamp((parseInt(card, 10) || 1) - 1, 0, 3);
+  const [i, setI] = React.useState(init);
+  React.useEffect(() => {
+    const el = ref.current;
+    el.scrollLeft = init * el.clientWidth;
+    const f = () => setI(clamp(Math.round(el.scrollLeft / el.clientWidth), 0, 3));
+    el.addEventListener('scroll', f, { passive: true });
+    return () => el.removeEventListener('scroll', f);
+  }, []);
+  const go = n => { const el = ref.current; el.scrollTo({ left: clamp(n, 0, 3) * el.clientWidth, behavior: 'smooth' }); };
+  useDragScroll(ref, (el, dx, startLeft) => {
+    const s = Math.round(startLeft / el.clientWidth);
+    go(s + (dx < -40 ? 1 : dx > 40 ? -1 : 0));
+  });
+  return (
+    <div className="page swipe-a">
+      <Head />
+      <div className="deck" ref={ref} tabIndex={0} onKeyDown={e => { if (e.key === 'ArrowRight') go(i + 1); if (e.key === 'ArrowLeft') go(i - 1); }}>
+        <section className="slide">
+          <div style={{ marginTop: 6 }}><Hero /></div>
+          <div style={{ marginTop: 16 }}><Er /></div>
+          <div className="next-up">
+            <div className="nu-label">往左滑 →</div>
+            <div className="nu-row"><span className="nu-n">2</span>今天留意 · 呼吸<span className="muted">老年期</span></div>
+            <div className="nu-row"><span className="nu-n">3</span>天气 · 19 点推荐遛<span className="muted">早上有雨</span></div>
+            <div className="nu-row"><span className="nu-n">4</span>顺手注意 · 2 条<span className="muted">+ 冷知识</span></div>
+          </div>
+        </section>
+        <section className="slide"><Watch /></section>
+        <section className="slide"><WxEyebrow /><div className="card wx"><DayChart /><LegendOne /><Timeline /></div></section>
+        <section className="slide"><Stickies /><Fact className="foot-fact" /></section>
+      </div>
+      <div className="dots-row" aria-label={A_CARDS[i]}>{[0, 1, 2, 3].map(n => <i key={n} className={n === i ? 'on' : ''} onClick={() => go(n)} />)}</div>
+      <Tabs active="今天" />
+    </div>
+  );
+}
+
+/* ===================== B · 纵向主干 + 局部横滑 ===================== */
+function SwipeB() {
+  const ref = React.useRef(null);
+  useDragScroll(ref, (el, dx, startLeft) => {
+    const xs = [...el.children].map(c => c.offsetLeft - 20);
+    let s = 0; xs.forEach((x, k) => { if (Math.abs(x - startLeft) < Math.abs(xs[s] - startLeft)) s = k; });
+    const t = clamp(s + (dx < -40 ? 1 : dx > 40 ? -1 : 0), 0, xs.length - 1);
+    el.scrollTo({ left: xs[t], behavior: 'smooth' });
+  });
+  return (
+    <div className="page swipe-b">
+      <div className="page-body">
+        <Head />
+        <div className="wrap">
+          <div style={{ marginTop: 6 }}><Hero /></div>
+          <div style={{ marginTop: 16 }}><Er /></div>
+          <section className="section rail-sec">
+            <div className="rail" ref={ref}>
+              <div className="card rcard">
+                <div className="rc-head"><div><div className="rc-label">今天留意</div><h2 className="rc-title display">呼吸</h2></div><Mascot src={SVG_REST} className="rc-mascot m" /></div>
+                <div className="block"><div className="block-text">睡着时呼吸变快、咳嗽、走一会儿就累</div></div>
+                <div className="block tip"><div className="block-text">睡熟时数一分钟，超过 <span className="num">30</span> 次就去看</div></div>
+              </div>
+              <Sticky k="s1"><div className="rc-label">顺手注意</div>老年犬建议每半年体检<span style={{ whiteSpace: 'nowrap' }}>一次，</span>距上次已经 <span className="num">212</span> 天</Sticky>
+              <Sticky k="s2"><div className="rc-label">顺手注意</div>换毛季：每天梳毛。双层毛不要剃</Sticky>
+            </div>
+          </section>
+          <section className="section after-rail"><div className="card wx"><div className="rc-label wx-label">今天 · 武侯区<span className="right">6:00–22:00</span></div><DayChart H={172} /><LegendPlan /></div></section>
+          <Fact className="foot-fact" compact />
+        </div>
+      </div>
+      <Tabs active="今天" />
+    </div>
+  );
+}
+
+/* ===================== 现状（hybrid 的今天页原样，只用来量高度 / ?v=now） ===================== */
+function NowScreen() {
+  return (
+    <div className="page">
+      <div className="page-body">
+        <Head />
+        <div className="wrap">
+          <div style={{ marginTop: 6 }}><Hero /></div>
+          <div style={{ marginTop: 16 }}><Er /></div>
+          <section className="section"><Watch /></section>
+          <section className="section"><WxEyebrow /><div className="card wx"><DayChart /><LegendFull /><Timeline /></div></section>
+          <section className="section"><Stickies /></section>
+          <div className="foot"><Mascot src={SVG_WALK} className="foot-mascot m" /><div className="foot-line display">今天就这些。</div></div>
+        </div>
+      </div>
+      <Tabs active="今天" />
+    </div>
+  );
+}
+
+/* ===================== 画板 ===================== */
+const Q = new URLSearchParams(location.search);
+const V = (Q.get('v') || '').toLowerCase();
+const CARD = Q.get('card');
+function Phone({ children }) { return <div className="phone"><IosFrame time="7:41" battery={82}>{children}</IosFrame></div>; }
+function Board() {
+  const [m, setM] = React.useState(null);
+  React.useEffect(() => {
+    const measure = () => {
+      const now = document.querySelector('.measure-now .page');
+      const b = document.querySelector('.slot-b .page');
+      const slides = [...document.querySelectorAll('.slot-a .slide')].map(s => s.scrollHeight - s.clientHeight);
+      setM({ now: now ? now.offsetHeight : 0, b: b ? b.scrollHeight : 0, slides });
+      if (Q.get('debug')) {
+        const rows = sel => { const page = document.querySelector(sel); const top = page.getBoundingClientRect().top; return [...page.querySelectorAll('.page-body > *, .wrap > *, .tabs')].map(e => { const r = e.getBoundingClientRect(); return `${(e.className || e.tagName).toString().slice(0, 28).padEnd(28)} top ${Math.round(r.top - top)}  h ${Math.round(r.height)}`; }).join('\n') + `\nTOTAL ${page.scrollHeight}`; };
+        const pre = document.createElement('pre'); pre.id = 'debug';
+        const ox = sel => { const c = document.querySelector(sel).parentElement; return `${sel}: scrollWidth ${c.scrollWidth} / clientWidth ${c.clientWidth} -> ${c.scrollWidth <= c.clientWidth ? 'OK' : 'OVERFLOW'}`; };
+        pre.textContent = '== B ==\n' + rows('.slot-b .page') + '\n\n== NOW ==\n' + rows('.measure-now .page') + '\n\n== A slides overflow ==\n' + JSON.stringify(slides) + '\n\n== horizontal overflow ==\n' + ox('.slot-a .page') + '\n' + ox('.slot-b .page');
+        document.body.appendChild(pre);
+      }
+    };
+    (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => setTimeout(measure, 400));
+  }, []);
+  const over = m ? m.slides.map((o, k) => [o, k + 1]).filter(([o]) => o > 2) : [];
+  return (
+    <>
+      <div className="board">
+        <div className="slot slot-a">
+          <div className="slot-label"><b>A</b>整页横滑</div>
+          <Phone><SwipeA card={CARD} /></Phone>
+          <p className="slot-cap"><b>页头固定，下面 4 张卡左右翻页，底部圆点指示。</b>每张卡一个主题：需要关注的事 + 急诊 → 今天留意 → 天气 → 便利贴 + 冷知识。
+            {m ? <span className="meas">{over.length ? '第 ' + over.map(([o, k]) => k + ' 张超出 ' + o + ' px').join('、') + '（卡内可上下滚）' : <><strong>不用纵向滚动</strong>，4 张卡每张都在一屏内</>}</span> : null}
+          </p>
+        </div>
+        <div className="slot slot-b">
+          <div className="slot-label"><b>B</b>纵向主干 + 局部横滑</div>
+          <Phone><SwipeB /></Phone>
+          <p className="slot-cap"><b>主卡和急诊入口仍在顶上，</b>「今天留意」和两张便利贴并成一行横滑（露出下一张的边），天气图说明只留一句，页尾一条冷知识。
+            {m ? <span className="meas">整页 {m.b} px · 现状 {m.now} px · <strong>短 {Math.round((1 - m.b / m.now) * 100)}%</strong></span> : null}
+          </p>
+        </div>
+      </div>
+      <div className="measure-now" aria-hidden="true"><NowScreen /></div>
+    </>
+  );
+}
+const FULL = Q.get('full') === '1';
+if (FULL) document.body.classList.add('full');
+function useInitialScroll() {
+  React.useEffect(() => {
+    const n = parseInt(Q.get('scroll'), 10); if (!n) return;
+    const pg = document.querySelector('.stage .page'); if (pg && pg.parentElement) pg.parentElement.scrollTop = n;
+  }, []);
+}
+function App() {
+  useInitialScroll();
+  if (FULL && V === 'b') return <div className="full"><SwipeB /></div>;
+  if (FULL && V === 'now') return <div className="full"><NowScreen /></div>;
+  if (V === 'a') return <div className="stage"><Phone><SwipeA card={CARD} /></Phone></div>;
+  if (V === 'b') return <div className="stage"><Phone><SwipeB /></Phone></div>;
+  if (V === 'now') return <div className="stage"><Phone><NowScreen /></Phone></div>;
+  return <Board />;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+</script>
+</body>
+</html>
